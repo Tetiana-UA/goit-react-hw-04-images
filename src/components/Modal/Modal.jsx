@@ -1,4 +1,4 @@
-import { Component } from "react";
+import { useEffect } from "react";
 import { createPortal } from "react-dom";
 
 import css from "./modal.module.css";
@@ -6,24 +6,19 @@ import css from "./modal.module.css";
 
 const modalRoot=document.getElementById("modal-root");
 
-export class Modal extends Component {
-    
-componentDidMount(){
-    document.addEventListener("keydown",this.closeModal)
-    
-}
-
-closeModal=({target, currentTarget, code}) => {
-    if(target === currentTarget || code === "Escape"){
-        this.props.close()
+export const Modal = ({close, selectedPhoto}) => {
+    const closeModal=({target, currentTarget, code}) => {
+        if(target === currentTarget || code === "Escape"){
+            close()
+        }
     }
+    
+    useEffect(()=>{
+    document.addEventListener("keydown", closeModal);
+    
+    return () => document.removeEventListener("keydown",closeModal);
 }
-
-    render() {
-        const {closeModal} =this;
-        const {selectedPhoto}=this.props;
-        
-      
+) 
 
         return createPortal(
             (<div onClick={closeModal} className={css.overlay}>
@@ -31,11 +26,9 @@ closeModal=({target, currentTarget, code}) => {
                     
                 <img src={selectedPhoto.largeImageURL} alt="" />
 
-    
                 </div>
             </div>),
             modalRoot
         );
     }
-}
- 
+

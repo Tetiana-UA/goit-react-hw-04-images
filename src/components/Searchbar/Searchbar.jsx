@@ -1,35 +1,40 @@
-import { Component } from "react";
+import { useState, useEffect, useRef } from "react";
 import  css  from "./searchbar.module.css";
 
-class Searchbar extends Component {
-    state = { 
-        search:""
-    } 
 
-    handleChange = ({target}) => {
+const Searchbar = ({onSubmit}) => {
+    const [state, setState]  = useState ({
+        search:"",
+    })
+
+    const inputRef=useRef(null);
+
+    useEffect(()=>{
+        inputRef.current.focus(); 
+    },[])
+
+    const handleChange = ({target}) => {
         const {name, value}=target;
-        this.setState({
+        setState({
+            ...state,
             [name]:value
         })
     }
 
-    handleSubmit = (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
-        this.props.onSubmit({...this.state});
-        this.setState({
-            search:""
-        })
+        onSubmit({...state});
+        reset();
+        
     }
+    const reset =()=>{
+    setState({
+        search:""
+    });
+}
 
-
-
-
-    render() {
-        const {handleChange, handleSubmit}=this; 
-        const {search}=this.state;
-
-        return (
-            <header className={css.searchbar}>
+    return (
+        <header className={css.searchbar}>
                 <form onSubmit={handleSubmit} className={css.searchForm} >
                     <button 
                     type="submit" 
@@ -38,7 +43,8 @@ class Searchbar extends Component {
                     </button>
 
                     <input 
-                    value={search}
+                    ref={inputRef}
+                    value={state.search}
                     name="search"
                     onChange={handleChange}
                     className={css.searchFormInput}
@@ -51,6 +57,6 @@ class Searchbar extends Component {
     </header>
         );
     }
-}
+
  
 export default Searchbar;
